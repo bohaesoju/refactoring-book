@@ -72,31 +72,28 @@ function statement(invoice, plays){
     }
 
     const totalVolumeCredits =() => {
-        let volumeCredits = 0;
+        let result = 0;
         for(let perf of invoice[0].performances){
-            volumeCredits += volumeCreditsFor(perf);
+            result += volumeCreditsFor(perf);
         }
-        return volumeCredits;
+        return result;
     }
 
-    const appleSauce = () => {
-        let totalAmount = 0;
+    const totalAmount = () => {
+        let result = 0;
         for(let perf of invoice[0].performances){
-            totalAmount += amountFor(perf)
+            result += amountFor(perf)
         }
-        return totalAmount;
+        return result;
     }
     let result = `청구 내역 (고객명: ${invoice[0].customer})\n`;
 
     for(let perf of invoice[0].performances){
         //청구 내역을 출력한다.
         result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
-        totalAmount += amountFor(perf);
     }
 
-    let totalAmount = appleSauce();
-
-    result += `총액: ${usd(totalAmount)}\n`
+    result += `총액: ${usd(totalAmount())}\n`
     result +=  `적립 포인트: ${totalVolumeCredits()}점\n`;
     return result;
 }
