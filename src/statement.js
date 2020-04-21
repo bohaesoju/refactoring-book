@@ -55,6 +55,15 @@ function statement(invoice, plays){
         }
         return result;  // 함수 안에서 값이 바뀌는 변수 반환
     }
+
+    const volumeCreditsFor = (perf) => {
+        let volumeCredits = 0;
+        volumeCredits += Math.max(perf.audience - 30, 0);
+        //희극 관객 5명 마다 추가 포인트를 제공한다.
+        if("comedy" === playFor(perf).type) 
+            volumeCredits += Math.floor(perf.audience / 5);
+        return volumeCredits;    
+    }
     let totalAmount = 0;
     let volumeCredits = 0;
     let result = `청구 내역 (고객명: ${invoice[0].customer})\n`;
@@ -63,17 +72,12 @@ function statement(invoice, plays){
     minimumFractionDigits: 2}).format;
 
     for(let perf of invoice[0].performances){
+        volumeCredits += volumeCreditsFor(perf);
         let thisAmount = amountFor(perf);
 
-        //포인트를 적립한다.
-        volumeCredits += Math.max(perf.audience - 30, 0);
-
-        //희극 관객 5명 마다 추가 포인트를 제공한다.
-        if("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
-
         //청구 내역을 출력한다.
-        result += ` ${playFor(perf).name}: ${format(thisAmount/100)} (${perf.audience}석)\n`;
-        totalAmount += thisAmount;
+        result += ` ${playFor(perf).name}: ${format(amountFor(perf)/100)} (${perf.audience}석)\n`;
+        totalAmount += amountFor(perf);
     }
     result += `총액: ${format(totalAmount / 100)}\n`
     result +=  `적립 포인트: ${volumeCredits}점\n`;
