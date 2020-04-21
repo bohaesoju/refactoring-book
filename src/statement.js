@@ -29,8 +29,12 @@ let  invoicesJson =
 ];     
 
 function statement(invoice, plays){
+    const playFor = (aPerformance) => {
+        return plays[aPerformance.playID];
+    }
     const enrichPerformance = (aPerformance) => {
         const result = Object.assign({}, aPerformance); //얕은 복사 수행
+        result.play = playFor(result);  //중간 데이터에 연극 정보를 저장
         return result;
     }
     const statementData = {};
