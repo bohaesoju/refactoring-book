@@ -53,18 +53,6 @@ function statement(invoice, plays){
         }
         return result;  // 함수 안에서 값이 바뀌는 변수 반환
     }
-    const enrichPerformance = (aPerformance) => {
-        const result = Object.assign({}, aPerformance); //얕은 복사 수행
-        result.play = playFor(result);  //중간 데이터에 연극 정보를 저장
-        result.amount = amountFor(result);
-        return result;
-    }
-    const statementData = {};
-    statementData.customer = invoice[0].customer;
-    statementData.performances = invoice[0].performances.map(enrichPerformance);
-    return renderPlainText(statementData, plays);
-}
-const renderPlainText = (data, plays) => {    
 
     const volumeCreditsFor = (aPerformance) => {
         let result = 0;
@@ -75,27 +63,44 @@ const renderPlainText = (data, plays) => {
         return result;    
     }
 
-    const usd = (aNumber) => {
-        return new Intl.NumberFormat('en-US',
-            { style: 'currency', currency: 'USD',
-            minimumFractionDigits: 2}).format(aNumber/100);
-    }
-
-    const totalVolumeCredits =() => {
+    const totalVolumeCredits =(data) => {
         let result = 0;
         for(let perf of data.performances){
-            result += volumeCreditsFor(perf);
+            result += perf.volumeCredits;
         }
         return result;
     }
 
-    const totalAmount = () => {
+    const totalAmount = (data) => {
         let result = 0;
         for(let perf of data.performances){
             result += perf.amount
         }
         return result;
     }
+
+    const enrichPerformance = (aPerformance) => {
+        const result = Object.assign({}, aPerformance); //얕은 복사 수행
+        result.play = playFor(result);  //중간 데이터에 연극 정보를 저장
+        result.amount = amountFor(result);
+        result.volumeCredits = volumeCreditsFor(result);
+        return result;
+    }
+    const statementData = {};
+    statementData.customer = invoice[0].customer;
+    statementData.performances = invoice[0].performances.map(enrichPerformance);
+    statementData.totalAmount = totalAmount(statementData);
+    statementData.totalVolumeCredits = totalVolumeCredits(statementData);
+    return renderPlainText(statementData, plays);
+}
+const renderPlainText = (data, plays) => {    
+
+    const usd = (aNumber) => {
+        return new Intl.NumberFormat('en-US',
+            { style: 'currency', currency: 'USD',
+            minimumFractionDigits: 2}).format(aNumber/100);
+    }
+
     let result = `청구 내역 (고객명: ${data.customer})\n`;
 
     for(let perf of data.performances){
@@ -103,8 +108,8 @@ const renderPlainText = (data, plays) => {
         result += ` ${perf.play.name}: ${usd(perf.amount)} (${perf.audience}석)\n`;
     }
 
-    result += `총액: ${usd(totalAmount())}\n`
-    result +=  `적립 포인트: ${totalVolumeCredits()}점\n`;
+    result += `총액: ${usd(data.totalAmount)}\n`
+    result +=  `적립 포인트: ${data.totalVolumeCredits}점\n`;
     return result;
 }
 
