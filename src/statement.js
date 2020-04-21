@@ -29,9 +29,13 @@ let  invoicesJson =
 ];     
 
 function statement(invoice, plays){
+    const enrichPerformance = (aPerformance) => {
+        const result = Object.assign({}, aPerformance); //얕은 복사 수행
+        return result;
+    }
     const statementData = {};
     statementData.customer = invoice[0].customer;
-    statementData.performances = invoice[0].performances;
+    statementData.performances = invoice[0].performances.map(enrichPerformance);
     return renderPlainText(statementData, plays);
 }
 const renderPlainText = (data, plays) => {    
