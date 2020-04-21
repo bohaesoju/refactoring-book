@@ -29,7 +29,9 @@ let  invoicesJson =
 ];     
 
 function statement(invoice, plays){
-    
+    return renderPlainText(invoice, plays);
+}
+const renderPlainText = (invoice, plays) => {    
     const playFor = (aPerformance) => {
         return plays[aPerformance.playID];
     }
@@ -98,5 +100,5 @@ function statement(invoice, plays){
     return result;
 }
 
-statement(invoicesJson, playsJson);
-console.log(statement(invoicesJson, playsJson)); 
+
+statement(invoicesJson, playsJson)
