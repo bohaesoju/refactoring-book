@@ -56,13 +56,13 @@ function statement(invoice, plays){
         return result;  // 함수 안에서 값이 바뀌는 변수 반환
     }
 
-    const volumeCreditsFor = (perf) => {
-        let volumeCredits = 0;
-        volumeCredits += Math.max(perf.audience - 30, 0);
+    const volumeCreditsFor = (aPerformance) => {
+        let result = 0;
+        result += Math.max(perf.audience - 30, 0);
         //희극 관객 5명 마다 추가 포인트를 제공한다.
         if("comedy" === playFor(perf).type) 
-            volumeCredits += Math.floor(perf.audience / 5);
-        return volumeCredits;    
+        result += Math.floor(perf.audience / 5);
+        return result;    
     }
     let totalAmount = 0;
     let volumeCredits = 0;
