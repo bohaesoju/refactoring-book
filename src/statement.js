@@ -29,8 +29,31 @@ let  invoicesJson =
 ];     
 
 function statement(invoice, plays){
+    
     const playFor = (aPerformance) => {
         return plays[aPerformance.playID];
+    }
+
+    const amountFor = (aPerformance, play) => {  //값이 바뀌지 않는 변수는 매개변수로 전달
+        let result = 0;   // 명확한 이름으로 변경
+        switch(playFor(aPerformance).type){
+            case "tragedy": 
+                result = 4000;
+                if(aPerformance.audience > 30){
+                    result += 1000 * (aPerformance.audience - 30);
+                }
+                break;
+            case "comedy":
+                result = 30000;
+                if(aPerformance.audience > 20){
+                    result += 10000 + 500 * (aPerformance.audience - 20);
+                }    
+                result += 300 * aPerformance.audience;
+                break;
+            default:
+                throw new Error(`알 수 없는 장르: ${playFor(aPerformance).type}`)    
+        }
+        return result;  // 함수 안에서 값이 바뀌는 변수 반환
     }
     let totalAmount = 0;
     let volumeCredits = 0;
@@ -40,7 +63,7 @@ function statement(invoice, plays){
     minimumFractionDigits: 2}).format;
 
     for(let perf of invoice[0].performances){
-        let thisAmount = amountFor(perf, playFor(perf));
+        let thisAmount = amountFor(perf);
 
         //포인트를 적립한다.
         volumeCredits += Math.max(perf.audience - 30, 0);
@@ -55,28 +78,6 @@ function statement(invoice, plays){
     result += `총액: ${format(totalAmount / 100)}\n`
     result +=  `적립 포인트: ${volumeCredits}점\n`;
     return result;
-}
-
-const amountFor = (aPerformance, play) => {  //값이 바뀌지 않는 변수는 매개변수로 전달
-    let result = 0;   // 명확한 이름으로 변경
-    switch(play.type){
-        case "tragedy": 
-            result = 4000;
-            if(aPerformance.audience > 30){
-                result += 1000 * (aPerformance.audience - 30);
-            }
-            break;
-        case "comedy":
-            result = 30000;
-            if(aPerformance.audience > 20){
-                result += 10000 + 500 * (aPerformance.audience - 20);
-            }    
-            result += 300 * aPerformance.audience;
-            break;
-        default:
-            throw new Error(`알 수 없는 장르: ${play.type}`)    
-    }
-    return result;  // 함수 안에서 값이 바뀌는 변수 반환
 }
 
 statement(invoicesJson, playsJson);
