@@ -1,4 +1,32 @@
 export default function createStatementData(invoice, plays) {
+
+    class PerformanceCalculator {
+        constructor(aPerformance, aPlay){
+            this.performances = aPerformance;
+            this.play = aPlay;
+        }
+        get amount(){
+            let result = 0;
+            switch(this.play.type){ // amountFor()함수가 매개변수로 받던 정보를 계산기 필드에서 바로 얻음
+            case "tragedy": 
+                result = 4000;
+                if(this.performances.audience > 30){
+                    result += 1000 * (this.performances.audience - 30);
+                }
+                break;
+            case "comedy":
+                result = 30000;
+                if(this.performances.audience > 20){
+                    result += 10000 + 500 * (this.performances.audience - 20);
+                }    
+                result += 300 * this.performances.audience;
+                break;
+            default:
+                throw new Error(`알 수 없는 장르: ${this.play.type}`)    
+            }
+            return result;
+        }
+    }
     const playFor = (aPerformance) => {
         return plays[aPerformance.playID];
     }
@@ -43,8 +71,9 @@ export default function createStatementData(invoice, plays) {
     }
 
     const enrichPerformance = (aPerformance) => {
+        const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));
         const result = Object.assign({}, aPerformance); //얕은 복사 수행
-        result.play = playFor(result);  //중간 데이터에 연극 정보를 저장
+        result.play = calculator.play;  //중간 데이터에 연극 정보를 저장
         result.amount = amountFor(result);
         result.volumeCredits = volumeCreditsFor(result);
         return result;
