@@ -36,9 +36,15 @@ export default function createStatementData(invoice, plays) {
             return result;  
         }
     }
+
+    const createPerformanceCalculator = (aPerformance, aPlay) => {
+        return new PerformanceCalculator(aPerformance, aPlay);
+    }
+
     const playFor = (aPerformance) => {
         return plays[aPerformance.playID];
     }
+    
     const amountFor = (aPerformance, play) => {  //값이 바뀌지 않는 변수는 매개변수로 전달
         return new PerformanceCalculator(aPerformance, playFor(aPerformance)).amount;  // 원본 함수인 amountFor() 도 계산기를 이용하도록 수정
     }
@@ -62,7 +68,7 @@ export default function createStatementData(invoice, plays) {
     }
 
     const enrichPerformance = (aPerformance) => {
-        const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));
+        const calculator = createPerformanceCalculator(aPerformance, playFor(aPerformance));
         const result = Object.assign({}, aPerformance); //얕은 복사 수행
         result.play = calculator.play;  //중간 데이터에 연극 정보를 저장
         result.amount = calculator.amount;  //amountFor() 대신 계산기의 함수 이용
