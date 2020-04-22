@@ -79,13 +79,19 @@ function statement(invoice, plays){
         result.volumeCredits = volumeCreditsFor(result);
         return result;
     }
-    const statementData = {};
-    statementData.customer = invoice[0].customer;
-    statementData.performances = invoice[0].performances.map(enrichPerformance);
-    statementData.totalAmount = totalAmount(statementData);
-    statementData.totalVolumeCredits = totalVolumeCredits(statementData);
-    return renderPlainText(statementData, plays);
+
+    const createStatementData = (invoice, plays) => {
+        const statementData = {};
+        statementData.customer = invoice[0].customer;
+        statementData.performances = invoice[0].performances.map(enrichPerformance);
+        statementData.totalAmount = totalAmount(statementData);
+        statementData.totalVolumeCredits = totalVolumeCredits(statementData);
+        return statementData;
+    }
+    
+    return renderPlainText(createStatementData(invoice, plays));
 }
+
 const renderPlainText = (data, plays) => {    
 
     const usd = (aNumber) => {
