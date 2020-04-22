@@ -26,6 +26,15 @@ export default function createStatementData(invoice, plays) {
             }
             return result;
         }
+
+        get volumeCredits(){
+            let result = 0;
+            result += Math.max(this.performances.audience - 30, 0);
+            //희극 관객 5명 마다 추가 포인트를 제공한다.
+            if("comedy" === this.play.type) 
+            result += Math.floor(this.performances.audience / 5);
+            return result;  
+        }
     }
     const playFor = (aPerformance) => {
         return plays[aPerformance.playID];
@@ -56,8 +65,8 @@ export default function createStatementData(invoice, plays) {
         const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));
         const result = Object.assign({}, aPerformance); //얕은 복사 수행
         result.play = calculator.play;  //중간 데이터에 연극 정보를 저장
-        result.amount = amountFor(result);
-        result.volumeCredits = volumeCreditsFor(result);
+        result.amount = calculator.amount;  //amountFor() 대신 계산기의 함수 이용
+        result.volumeCredits = calculator.volumeCredits;
         return result;
     }
 
