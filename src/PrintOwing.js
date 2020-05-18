@@ -18,6 +18,13 @@ export const printOwing = (invoice) => {
     return printBanner();
 }
 
+let poison = 3
+const add = (a, b) => {
+    return a + b + poison;
+}
+
+add(1,2); //결과는 6
+
 const calculateOutstanding = (invoice) => {
     let result = 0;
     for(const o of invoice.orders){
